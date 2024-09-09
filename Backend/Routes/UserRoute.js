@@ -1,8 +1,49 @@
 let express = require("express")
 let router = express.Router();
-let User = require("../Models/User.js")
-let updateUser = require("../Models/user_update.js")
-let jwt = require("jsonwebtoken")
+let User = require("../Models/User.js");
+let jwt = require('jsonwebtoken');
+
+//********************MIDDLEWARE******************************************* */
+
+// Verifikacija korisnika
+let verifyUser = (req, res, next) => {
+   console.log(req.headers.authorization)
+   try {
+     let token = req.headers.authorization?.slice(7); 
+     if (!token) {
+       return res.status(403).json({ message: "No token provided" });
+     }
+     console.log("test kljuc")
+     console.log(process.env.SECRETKEY)
+     let decoded = jwt.verify(        token, process.env.SECRETKEY);
+    if(decoded) {
+      console.log(decoded)
+      next();
+    } else{console.log("Token failed")}
+
+   } catch (e) {
+     return res.status(401).json({ message: "Invalid token" });
+   }
+};
+
+// Verifikacija Admina
+let verifyAdmin = async (req, res, next) => {
+   try {
+     let token = req.headers.authorization?.slice(7); 
+     let decoded = jwt.verify(token, process.env.SECRETKEY);
+     let user = await User.findById(decoded.id);
+
+     if (!user || user.role !== 'admin') {
+       return res.status(403).json({ message: "Unauthorized. Admin access only" });
+     }
+     req.user = user; 
+     next();
+   } catch (e) {
+     return res.status(403).json({ message: "Admin authorization failed" });
+   }
+};
+
+ 
 
 
 
@@ -101,7 +142,7 @@ if(data && data.length > 0) {
 })
 
 
-router.put("/userupdate", async(req, res) => {
+router.put("/userupdate", verifyAdmin, async(req, res) => {
     console.log("request recieved!")
 
     try {
@@ -122,7 +163,7 @@ router.put("/userupdate", async(req, res) => {
 })
 
 
-router.delete("/deleteuser/:id", async (req, res) => {
+router.delete("/deleteuser/:id", verifyAdmin, async (req, res) => {
 
 
     try {

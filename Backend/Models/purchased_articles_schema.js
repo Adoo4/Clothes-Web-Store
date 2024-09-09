@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
+let mongoose = require("mongoose");
 
-const CartSchema = new mongoose.Schema({
+let Purchased = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",  
@@ -23,8 +23,12 @@ const CartSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
+  },
+
+  value: {
+    type: Number
   }
 
 });
 
-module.exports = mongoose.model("Cart", CartSchema);
+module.exports = mongoose.model("Purchased", Purchased);

@@ -1,6 +1,6 @@
 let express = require("express")
 let router = express.Router();
-let AccessoriesSchema = require("../Models/accessories_schema.js");
+let AllProducts = require("../Models/allproducts_schema");
 let jwt = require('jsonwebtoken');
 let User = require("../Models/User.js")
 
@@ -44,32 +44,33 @@ let verifyAdmin = async (req, res, next) => {
    }
 };
 
- 
+
+
 
 
 //******************************CRUD RUTE***********************************
 
 
-router.post("/accessories",verifyUser, async (req, res) => {
+router.post("/post", async (req, res) => {
 
    try {
-      let newdata = new AccessoriesSchema(req.body);
+      let newdata = new AllProducts(req.body);
       let saveddata = await newdata.save();
       res.json(saveddata);
 
    }
    catch (e) {
-
+console.log(e.message)
 
    }
 })
 
-router.delete("/deleteaccessories/:id", verifyAdmin, async (req, res) => {
+router.delete("/delete/:id", async (req, res) => {
 
 
    try {
       let { id } = req.params
-      let newdata = await AccessoriesSchema.findByIdAndDelete(id)
+      let newdata = await AllProducts.findByIdAndDelete(id)
       res.json(newdata)
       if (!newdata) {
          return res.status(404).json({ message: "Article not found" });
@@ -81,16 +82,16 @@ router.delete("/deleteaccessories/:id", verifyAdmin, async (req, res) => {
    }
 })
 
-router.put("/editaccessory",verifyAdmin, async (req, res) => {
+router.put("/edit", async (req, res) => {
 
 
    try {
       let id = req.body._id
-      let newdata = await AccessoriesSchema.findByIdAndUpdate(id, req.body, { new: true })
+      let newdata = await AllProducts.findByIdAndUpdate(id, req.body, { new: true })
 
       if (!newdata) {
          return res.status(404).json({ message: "Edit failed" });
-      } else { res.json(newdata) }
+      } else { res.send("AllData updated") }
    }
    catch (e) {
       return res.status(404).json({ message: "Edit failed" });
@@ -99,10 +100,10 @@ router.put("/editaccessory",verifyAdmin, async (req, res) => {
 })
 
 
-router.get("/getaccessories",  async (req, res) => {
+router.get("/get", async (req, res) => {
 
    try {
-      let newdata = await AccessoriesSchema.find();
+      let newdata = await AllProducts.find();
       res.json(newdata)
    }
    catch (e) {
@@ -115,7 +116,7 @@ router.get("/getaccessories",  async (req, res) => {
 router.get("/getdetails", async (req, res) => {
    let { id } = req.query
    try {
-      let newdata = await AccessoriesSchema.findById(id);
+      let newdata = await AllProducts.findById(id);
       res.json(newdata)
    }
    catch (e) {
@@ -125,22 +126,6 @@ router.get("/getdetails", async (req, res) => {
 })
 
 
-
-
-
-
-
-router.get("/getaccessorieslimit", async (req, res) => {
-
-   try {
-      let newdata = await AccessoriesSchema.find().limit(6);
-      res.json(newdata)
-   }
-   catch (e) {
-
-
-   }
-})
 
 
 

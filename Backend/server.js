@@ -9,6 +9,8 @@ let topsRoute = require("./Routes/TopsRoute")
 let bottomdRoute = require("./Routes/BottomsRoute")
 let accessories = require("./Routes/AccessoriesRoute")
 let cart = require("./Routes/CartRoute")
+let allproducts = require("./Routes/AllProductsRoute")
+let purchased = require("./Routes/PurchaseRoute")
 
 
 config();
@@ -27,6 +29,8 @@ server.use("/tops", topsRoute);
 server.use("/bottoms", bottomdRoute)
 server.use("/accessories", accessories)
 server.use("/cart", cart)
+server.use("/allproducts", allproducts)
+server.use("/purchased", purchased)
 
 let connectDb = async () => {
     try {

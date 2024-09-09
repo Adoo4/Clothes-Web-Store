@@ -1,0 +1,33 @@
+let jwt = require('jsonwebtoken');
+
+let userMid = (req, res, next) => {
+  
+  let authHeader = req.headers.authorization;
+
+  if (!authHeader) {
+    return res.status(403).json({ message: 'Unauthorized' });
+  }
+
+ 
+  let token = authHeader.slice(7); 
+
+  try {
+    
+    let decoded = jwt.verify(token, process.env.SECRETKEY);
+
+    
+    req.user = decoded;
+
+    
+    if (decoded) {
+      console.log('Access granted');
+      next(); 
+    }  else {
+      return res.status(403).json({ message: 'Access denied.' });
+    }
+  } catch (error) {
+    return res.status(403).json({ message: 'Unauthorized. Invalid token.' });
+  }
+};
+
+module.exports = userMid;
